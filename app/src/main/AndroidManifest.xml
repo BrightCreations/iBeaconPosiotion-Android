@@ -22,19 +22,14 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="com.brightcreations.ibeaconposition.ui.activities.MainActivity">
+        <activity android:name="com.brightcreations.ibeaconposition.ui.activities.RangingActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name="com.brightcreations.ibeaconposition.ui.activities.MonitoringActivity">
-        </activity>
-        <activity android:name="com.brightcreations.ibeaconposition.ui.activities.RangingActivity">
-        </activity>
 
-        <service android:name="com.brightcreations.ibeaconposition.service.MonitoringService"/>
     </application>
 
 </manifest>

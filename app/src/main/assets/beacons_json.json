@@ -1,0 +1,36 @@
+{
+  "MapNorthCorrection": 105,
+  "PixelToCM_Ration": 3,
+  "Beacons": [
+    {
+      "Id": "10001",
+      "Location": "0,0",
+      "RoomPosition": "10,10"
+    },
+    {
+      "Id": "10002",
+      "Location": "100,0",
+      "RoomPosition": "90,10"
+    },
+    {
+      "Id": "10003",
+      "Location": "0,50",
+      "RoomPosition": "10,50"
+    },
+    {
+      "Id": "10004",
+      "Location": "100,50",
+      "RoomPosition": "90,50"
+    },
+    {
+      "Id": "10005",
+      "Location": "0,100",
+      "RoomPosition": "10,90"
+    },
+    {
+      "Id": "10006",
+      "Location": "100,100",
+      "RoomPosition": "90,90"
+    }
+  ]
+}

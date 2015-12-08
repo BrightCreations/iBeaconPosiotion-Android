@@ -1,5 +1,3 @@
 <resources>
     <string name="app_name">IBeaconPosition-Android</string>
-    <string name="start_monitoring">Start Monitoring</string>
-    <string name="start_ranging">Start Ranging</string>
 </resources>
