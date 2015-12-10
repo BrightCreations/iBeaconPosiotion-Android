@@ -183,19 +183,12 @@ public class RangingActivity extends AppCompatActivity implements BeaconConsumer
     }
 
     private void updatePinPosition(Point2 pos) {
-        Log.d(TAG, "Width " + mWidth + ", Height " + mHeight);
         float ratioX = mWidth / 100.0f;
         float ratioY = mHeight / 100.0f;
-        Log.d(TAG, "Ratio X " + ratioX + " Y " + ratioY);
         float translationX = (pos.x * ratioX);
-//        translationX = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, translationX,
-//                getResources().getDisplayMetrics());
         translationX -= mPinImageView.getWidth() / 2;
         float translationY = (pos.y * ratioY);
-//        translationY = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, translationY,
-//                getResources().getDisplayMetrics());
         translationY -= mPinImageView.getWidth() / 2;
-        Log.d(TAG, "Translation X " + translationX + " Y " + translationY);
         mPinImageView.animate().translationX(translationX)
                 .translationY(translationY).setDuration(300)
                 .setInterpolator(new AccelerateDecelerateInterpolator());
