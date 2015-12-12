@@ -2,6 +2,7 @@ package com.brightcreations.ibeaconposition.ui.activities;
 
 import android.Manifest;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.RemoteException;
@@ -16,10 +17,12 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ImageView;
 
 import com.brightcreations.ibeaconposition.android.R;
+import com.brightcreations.ibeaconposition.beacon.BeaconData;
 import com.brightcreations.ibeaconposition.beacon.BeaconsHelper;
 import com.brightcreations.ibeaconposition.beacon.Constants;
 import com.brightcreations.ibeaconposition.beacon.PositionHelper;
 import com.brightcreations.ibeaconposition.math.Point2;
+import com.brightcreations.ibeaconposition.service.SubmitPositionService;
 
 import org.altbeacon.beacon.Beacon;
 import org.altbeacon.beacon.BeaconConsumer;
@@ -28,23 +31,27 @@ import org.altbeacon.beacon.BeaconParser;
 import org.altbeacon.beacon.RangeNotifier;
 import org.altbeacon.beacon.Region;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 public class RangingActivity extends AppCompatActivity implements BeaconConsumer, RangeNotifier {
     private static final int REQUEST_CHECK_LOCATION_PERMISSION = 0;
 
+    private static final int APPROXIMATE_POSITION = 0;
+    private static final int NEAREST_BEACON = 1;
+
     private static final String FILE_NAME = "beacons_json.json";
 
     private final String TAG = getClass().getSimpleName();
+
+    private String mUserName = "Mahmoud Habib";
 
     private Region mRegion;
     private BeaconManager mBeaconManager;
     private BeaconsHelper mBeaconsHelper;
     private PositionHelper mPositionHelper;
 
-    private int mCalculateMethod = PositionHelper.CALCULATE_NEAREST;
+    private int mMethod = APPROXIMATE_POSITION;
 
     private View mMainLayout;
     private ImageView mPinImageView;
@@ -102,34 +109,14 @@ public class RangingActivity extends AppCompatActivity implements BeaconConsumer
 
     @Override
     public void didRangeBeaconsInRegion(Collection<Beacon> collection, Region region) {
-        List<Beacon> matchingBeacons = new ArrayList<>();
-        for (Beacon beacon : collection) {
-            if (beacon.getId1().toString().equalsIgnoreCase(Constants.UUID)) {
-                Log.d(TAG, "Beacon " + beacon.toString() + " Dist " + beacon
-                        .getDistance() + " Rssi " + beacon.getRssi());
-                matchingBeacons.add(beacon);
-            }
+        List<Beacon> matchingBeacons = mBeaconsHelper.getMatchingBeacons(collection, mRegion);
+
+        for (Beacon beacon : matchingBeacons) {
+            Log.d(TAG, "Beacon " + beacon.toString() + " Dist " + beacon
+                    .getDistance() + " Rssi " + beacon.getRssi());
         }
 
-        final Beacon nearest = mBeaconsHelper.getNearestBeacon(matchingBeacons);
-        final Point2 position = mPositionHelper.getPosition(matchingBeacons, mCalculateMethod);
-        if (position != null) {
-            Log.d(TAG, "Nearest " + nearest.toString());
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    showPin();
-                    updatePinPosition(position);
-                }
-            });
-        } else {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    hidePin();
-                }
-            });
-        }
+        updatePosition(matchingBeacons);
     }
 
     private void init() {
@@ -185,16 +172,61 @@ public class RangingActivity extends AppCompatActivity implements BeaconConsumer
         }
     }
 
-    private void updatePinPosition(Point2 pos) {
-        float ratioX = mWidth / 100.0f;
-        float ratioY = mHeight / 100.0f;
-        float translationX = (pos.x * ratioX);
-        translationX -= mPinImageView.getWidth() / 2;
-        float translationY = (pos.y * ratioY);
-        translationY -= mPinImageView.getWidth() / 2;
-        mPinImageView.animate().translationX(translationX)
-                .translationY(translationY).setDuration(300)
-                .setInterpolator(new AccelerateDecelerateInterpolator());
+    private void updatePosition(List<Beacon> beacons) {
+        Point2 position = null;
+        switch (mMethod) {
+            case APPROXIMATE_POSITION:
+                position = mPositionHelper.getApproximatePosition(beacons);
+                Log.d(TAG, "Approximate Pos " + position);
+                break;
+            case NEAREST_BEACON:
+                BeaconData beaconData = mPositionHelper.getNearestBeacon(beacons);
+                if (beaconData != null) {
+                    Log.d(TAG, "Nearest Beacon " + beaconData.toString());
+                    position = beaconData.getRoomPosition();
+
+                    submitPosition(beaconData.getId(), mUserName);
+                }
+                break;
+        }
+        updatePinPosition(position);
+    }
+
+    private void submitPosition(String beaconId, String userName) {
+        Intent intent = new Intent(RangingActivity.this, SubmitPositionService.class);
+        intent.putExtra(SubmitPositionService.EXTRA_BEACON_ID, beaconId);
+        intent.putExtra(SubmitPositionService.EXTRA_NAME, userName);
+        startService(intent);
+    }
+
+    private void updatePinPosition(final Point2 pos) {
+        if (pos != null) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    showPin();
+                    float ratioX = mWidth / 100.0f;
+                    float ratioY = mHeight / 100.0f;
+
+                    float translationX = (pos.x * ratioX);
+                    translationX -= mPinImageView.getWidth() / 2;
+
+                    float translationY = (pos.y * ratioY);
+                    translationY -= mPinImageView.getWidth() / 2;
+
+                    mPinImageView.animate().translationX(translationX)
+                            .translationY(translationY).setDuration(300)
+                            .setInterpolator(new AccelerateDecelerateInterpolator());
+                }
+            });
+        } else {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    hidePin();
+                }
+            });
+        }
     }
 
 

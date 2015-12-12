@@ -30,6 +30,9 @@
             </intent-filter>
         </activity>
 
+        <service
+            android:name="com.brightcreations.ibeaconposition.service.SubmitPositionService"
+            android:exported="false"/>
     </application>
 
 </manifest>

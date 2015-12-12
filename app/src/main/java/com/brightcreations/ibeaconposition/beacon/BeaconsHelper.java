@@ -8,6 +8,7 @@ import android.util.Log;
 import com.brightcreations.ibeaconposition.math.Point2;
 
 import org.altbeacon.beacon.Beacon;
+import org.altbeacon.beacon.Region;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -53,10 +55,6 @@ public final class BeaconsHelper {
         loadFromFile(fileName);
     }
 
-    public BeaconData getBeaconData(String id) {
-        return mBeaconsMap.get(id);
-    }
-
     public BeaconData getBeaconData(Beacon beacon) {
         String id = beacon.getId3().toString();
         return mBeaconsMap.get(id);
@@ -77,6 +75,16 @@ public final class BeaconsHelper {
             nearest = beacons.get(0);
         }
         return nearest;
+    }
+
+    public List<Beacon> getMatchingBeacons(Collection<Beacon> beacons, Region region) {
+        List<Beacon> matchingBeacons = new ArrayList<>();
+        for (Beacon beacon : beacons) {
+            if (beacon.getId1().toString().equalsIgnoreCase(region.getUniqueId())) {
+                matchingBeacons.add(beacon);
+            }
+        }
+        return matchingBeacons;
     }
 
     public void setOnFileLoadListener(OnFileLoadListener listener) {

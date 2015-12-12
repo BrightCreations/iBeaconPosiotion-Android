@@ -11,9 +11,6 @@ import java.util.List;
  * Created by mahmoudhabib on 4/7/15.
  */
 public final class PositionHelper {
-    public static final int CALCULATE_NEAREST_AVERAGE = 0;
-    public static final int CALCULATE_NEAREST = 1;
-
     public static PositionHelper getInstance() {
         if (sInstance == null) {
             sInstance = new PositionHelper();
@@ -36,20 +33,20 @@ public final class PositionHelper {
 
     public Point2 getPosition(List<Beacon> beacons, int calculateMethod) {
         Point2 position = null;
-        if (!beacons.isEmpty()) {
-            switch (calculateMethod) {
-                case CALCULATE_NEAREST_AVERAGE:
-                    position = calculateNearestAverage(beacons);
-                    break;
-                case CALCULATE_NEAREST:
-                    position = calculateNearest(beacons);
-                    break;
-            }
-        }
+//        if (!beacons.isEmpty()) {
+//            switch (calculateMethod) {
+//                case APPROXIMATE_POSITION:
+//                    position = getApproximatePosition(beacons);
+//                    break;
+//                case NEAREST_BEACON:
+//                    position = getNearestBeacon(beacons);
+//                    break;
+//            }
+//        }
         return position;
     }
 
-    private Point2 calculateNearestAverage(List<Beacon> beacons) {
+    public Point2 getApproximatePosition(List<Beacon> beacons) {
         List<BeaconData> beaconsData = mBeaconsHelper.getBeaconsData(beacons);
         List<Point2> positions = new ArrayList<>();
         for (BeaconData beaconData : beaconsData) {
@@ -81,10 +78,13 @@ public final class PositionHelper {
         return new Point2((int) averageX, (int) averageY);
     }
 
-    private Point2 calculateNearest(List<Beacon> beacons) {
+    public BeaconData getNearestBeacon(List<Beacon> beacons) {
+        BeaconData beaconData = null;
         Beacon nearest = mBeaconsHelper.getNearestBeacon(beacons);
-        BeaconData beaconData = mBeaconsHelper.getBeaconData(nearest.getId3().toString());
-        return beaconData.getRoomPosition();
+        if (nearest != null) {
+            beaconData = mBeaconsHelper.getBeaconData(nearest);
+        }
+        return beaconData;
     }
 
 }

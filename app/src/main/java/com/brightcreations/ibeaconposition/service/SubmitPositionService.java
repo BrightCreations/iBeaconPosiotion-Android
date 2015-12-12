@@ -20,15 +20,19 @@ import java.util.Map;
  * Created by mahmoudhabib on 12/10/15.
  */
 public class SubmitPositionService extends IntentService {
-    public static final String ACTION_SUBMIT_POSITION_SUCCESS = "com.brightcreations.ibeaconposition.action.SUBMIT_POSITION_SUCCESS";
-    public static final String ACTION_SUBMIT_POSITION_ERROR = "com.brightcreations.ibeaconposition.action.SUBMIT_POSITION_ERROR";
+    public static final String ACTION_SUBMIT_POSITION_SUCCESS = "com.brightcreations" +
+            ".ibeaconposition.action.SUBMIT_POSITION_SUCCESS";
+    public static final String ACTION_SUBMIT_POSITION_ERROR = "com.brightcreations" +
+            ".ibeaconposition.action.SUBMIT_POSITION_ERROR";
 
     public static final String EXTRA_NAME = "com.brightcreations.ibeaconposition.extra.NAME";
-    public static final String EXTRA_BEACON_ID = "com.brightcreations.ibeaconposition..extra.BEACON_ID";
+    public static final String EXTRA_BEACON_ID = "com.brightcreations.ibeaconposition..extra" +
+            ".BEACON_ID";
 
     private static final String TAG = SubmitPositionService.class.getSimpleName();
 
-    private static final String SUBMIT_POSITION_URL = "http://riseup.brightcreations.com/api/users/add ";
+    private static final String SUBMIT_POSITION_URL = "http://riseup.brightcreations" +
+            ".com/api/users/add";
 
     private static final String PARAM_NAME = "name";
     private static final String PARAM_BEACON = "beacon";
