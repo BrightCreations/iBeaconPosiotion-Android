@@ -16,6 +16,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -54,6 +55,19 @@ public final class BeaconsHelper {
 
     public BeaconData getBeaconData(String id) {
         return mBeaconsMap.get(id);
+    }
+
+    public BeaconData getBeaconData(Beacon beacon) {
+        String id = beacon.getId3().toString();
+        return mBeaconsMap.get(id);
+    }
+
+    public List<BeaconData> getBeaconsData(List<Beacon> beacons) {
+        List<BeaconData> beaconsdata = new ArrayList<>();
+        for (Beacon beacon : beacons) {
+            beaconsdata.add(getBeaconData(beacon));
+        }
+        return beaconsdata;
     }
 
     public Beacon getNearestBeacon(List<Beacon> beacons) {

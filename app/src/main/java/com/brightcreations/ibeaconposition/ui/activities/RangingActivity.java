@@ -16,9 +16,9 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ImageView;
 
 import com.brightcreations.ibeaconposition.android.R;
-import com.brightcreations.ibeaconposition.beacon.BeaconData;
 import com.brightcreations.ibeaconposition.beacon.BeaconsHelper;
 import com.brightcreations.ibeaconposition.beacon.Constants;
+import com.brightcreations.ibeaconposition.beacon.PositionHelper;
 import com.brightcreations.ibeaconposition.math.Point2;
 
 import org.altbeacon.beacon.Beacon;
@@ -35,11 +35,16 @@ import java.util.List;
 public class RangingActivity extends AppCompatActivity implements BeaconConsumer, RangeNotifier {
     private static final int REQUEST_CHECK_LOCATION_PERMISSION = 0;
 
+    private static final String FILE_NAME = "beacons_json.json";
+
     private final String TAG = getClass().getSimpleName();
 
     private Region mRegion;
     private BeaconManager mBeaconManager;
     private BeaconsHelper mBeaconsHelper;
+    private PositionHelper mPositionHelper;
+
+    private int mCalculateMethod = PositionHelper.CALCULATE_NEAREST;
 
     private View mMainLayout;
     private ImageView mPinImageView;
@@ -77,7 +82,7 @@ public class RangingActivity extends AppCompatActivity implements BeaconConsumer
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-            @NonNull int[] grantResults) {
+                                           @NonNull int[] grantResults) {
         if (requestCode == REQUEST_CHECK_LOCATION_PERMISSION && grantResults.length > 0
                 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             permissionGranted();
@@ -107,19 +112,14 @@ public class RangingActivity extends AppCompatActivity implements BeaconConsumer
         }
 
         final Beacon nearest = mBeaconsHelper.getNearestBeacon(matchingBeacons);
-        if (nearest != null) {
+        final Point2 position = mPositionHelper.getPosition(matchingBeacons, mCalculateMethod);
+        if (position != null) {
             Log.d(TAG, "Nearest " + nearest.toString());
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    BeaconData beaconData = mBeaconsHelper
-                            .getBeaconData(nearest.getId3().toString());
-                    if (beaconData != null) {
-                        Point2 pos = beaconData.getPosition();
-                        Log.d(TAG, "Pos " + pos);
-                        showPin();
-                        updatePinPosition(pos);
-                    }
+                    showPin();
+                    updatePinPosition(position);
                 }
             });
         } else {
@@ -149,7 +149,10 @@ public class RangingActivity extends AppCompatActivity implements BeaconConsumer
                 Log.d(TAG, "File Fail");
             }
         });
-        mBeaconsHelper.init("beacons_json.json");
+        mBeaconsHelper.init(FILE_NAME);
+
+        mPositionHelper = PositionHelper.getInstance();
+        mPositionHelper.init(mBeaconsHelper);
     }
 
     private void initBeaconManager() {
@@ -194,6 +197,7 @@ public class RangingActivity extends AppCompatActivity implements BeaconConsumer
                 .setInterpolator(new AccelerateDecelerateInterpolator());
     }
 
+
     private void showPin() {
         mPinImageView.animate().alpha(1.0f).setDuration(300);
     }
@@ -203,7 +207,7 @@ public class RangingActivity extends AppCompatActivity implements BeaconConsumer
     }
 
     private boolean checkPermissionsGranted(String permission,
-            int requestCode) {
+                                            int requestCode) {
         boolean granted = ContextCompat.checkSelfPermission(this,
                 permission) == PackageManager.PERMISSION_GRANTED;
         Log.d(TAG, "Permission Granted ? " + granted);
