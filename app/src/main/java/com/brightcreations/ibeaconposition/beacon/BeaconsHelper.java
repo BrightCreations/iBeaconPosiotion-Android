@@ -19,7 +19,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +43,7 @@ public final class BeaconsHelper {
 
     private int mMapNorthCorrection;
     private int mPixelToCmRatio;
+    
     private Map<String, BeaconData> mBeaconsMap;
 
     private BeaconsHelper(Context context) {
@@ -66,15 +66,6 @@ public final class BeaconsHelper {
             beaconsdata.add(getBeaconData(beacon));
         }
         return beaconsdata;
-    }
-
-    public Beacon getNearestBeacon(List<Beacon> beacons) {
-        Beacon nearest = null;
-        if (!beacons.isEmpty()) {
-            Collections.sort(beacons, new BeaconsDistanceComparator());
-            nearest = beacons.get(0);
-        }
-        return nearest;
     }
 
     public List<Beacon> getMatchingBeacons(Collection<Beacon> beacons, Region region) {

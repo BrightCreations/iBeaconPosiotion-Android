@@ -51,7 +51,7 @@ public class RangingActivity extends AppCompatActivity implements BeaconConsumer
     private BeaconsHelper mBeaconsHelper;
     private PositionHelper mPositionHelper;
 
-    private int mMethod = APPROXIMATE_POSITION;
+    private int mMethod = NEAREST_BEACON;
 
     private View mMainLayout;
     private ImageView mPinImageView;
