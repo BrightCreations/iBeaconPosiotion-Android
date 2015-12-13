@@ -44,7 +44,7 @@ public class RangingActivity extends AppCompatActivity implements BeaconConsumer
 
     private final String TAG = getClass().getSimpleName();
 
-    private String mUserName = "Mahmoud Habib";
+    private String mUserName = "MahmoudHabib";
 
     private Region mRegion;
     private BeaconManager mBeaconManager;
@@ -185,7 +185,7 @@ public class RangingActivity extends AppCompatActivity implements BeaconConsumer
                     Log.d(TAG, "Nearest Beacon " + beaconData.toString());
                     position = beaconData.getRoomPosition();
 
-                    submitPosition(beaconData.getId(), mUserName);
+                    submitPosition(getSimpleId(beaconData.getId()), mUserName);
                 }
                 break;
         }
@@ -197,6 +197,10 @@ public class RangingActivity extends AppCompatActivity implements BeaconConsumer
         intent.putExtra(SubmitPositionService.EXTRA_BEACON_ID, beaconId);
         intent.putExtra(SubmitPositionService.EXTRA_NAME, userName);
         startService(intent);
+    }
+
+    private String getSimpleId(String id) {
+        return "B0" + id.charAt(id.length() - 1);
     }
 
     private void updatePinPosition(final Point2 pos) {

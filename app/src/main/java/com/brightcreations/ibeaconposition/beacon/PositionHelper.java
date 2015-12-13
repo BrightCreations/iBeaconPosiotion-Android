@@ -37,7 +37,7 @@ public final class PositionHelper {
             List<BeaconData> beaconsData = mBeaconsHelper.getBeaconsData(beacons);
             List<Point2> positions = new ArrayList<>();
             for (BeaconData beaconData : beaconsData) {
-                positions.add(beaconData.getPosition());
+                positions.add(new Point2(beaconData.getPosition()));
             }
             double distancesSum = 0;
             for (Beacon beacon : beacons) {
